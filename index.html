@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGL</title>
     <link rel="stylesheet" href="./style.css" type="text/css">
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <form>
+        <form class="canvasForm">
             <table border="1">
                 <tr>
                     <td align="center">
@@ -18,13 +19,15 @@
                 </tr>
                 <tr>
                     <td>
-                        <input type="radio" name="shape" value="garis"> Garis </input>
+                        <input type="radio" name="shape" id="garis" value="garis"> Garis
                         <br>
-                        <input type="radio" name="shape" value="persegi"> Persegi </input>
+                        <input type="radio" name="shape" id="persegi" value="persegi"> Persegi
                         <br>
-                        <input type="radio" name="shape" value="persegipanjang"> Persegi Panjang </input>
+                        <input type="radio" name="shape" id="persegipanjang" value="persegipanjang"> Persegi Panjang
                         <br>
-                        <input type="radio" name="shape" value="poligon"> Poligon </input>
+                        <input type="radio" name="shape" id="poligon" value="poligon"> Poligon
+                        <br>
+                        Sisi Poligon <input type="text" name="poligonSide">
                     </td>
                 </tr>
                 <tr>
@@ -34,7 +37,7 @@
                 </tr>
             </table>
         </form>
-        <canvas width="800" height="600"></canvas>
+        <canvas width="800" height="600" id="canvas"></canvas>
     </div>
 </body>
 </html>
