@@ -5,87 +5,7 @@ const rectangelCoor = [
   -1.0, -1.0,
 ];
 
-function getMouseCoordinate(canvas, e) {
-  var canvasPosition = canvas.getBoundingClientRect();
-  var canvasX = Math.round(e.clientX - canvasPosition.left);
-  var canvasY = Math.round(e.clientY - canvasPosition.top);
-  return {
-    x: canvasX,
-    y: canvasY
-  };
-}
-
-main();
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
-
-function main() {
-  const canvas = document.querySelector('#glCanvas');
-  const gl = canvas.getContext('webgl');
-
-  if (!gl) {
-    alert('Unable to initialize WebGL. Your browser or machine may not support it.');
-    return;
-  }
-
-  // Vertex shader program
-  const vsSource = `
-    attribute vec4 aVertexPosition;
-    uniform mat4 uModelViewMatrix;
-    uniform mat4 uProjectionMatrix;
-    void main() {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-    }
-    `;
-
-  // Fragment shader program
-  // ini buat ganti warna shapenya
-  const fsSource = `
-    void main() {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-    }
-  `;
-
-  document.addEventListener('mousedown', function(e) {
-    var pos = getMouseCoordinate(canvas, e);
-    const x = pos.x / gl.canvas.width  *  2 - 1;
-    const y = pos.y / gl.canvas.height * -2 + 1;    
-    // console.log(x, y);
-  });
-
-  document.addEventListener('mouseup', function(e) {
-    var pos = getMouseCoordinate(canvas, e);
-    const x = pos.x / gl.canvas.width  *  2 - 1;
-    const y = pos.y / gl.canvas.height * -2 + 1;
-    // console.log(x, y);
-    const buffers = initBuffers(gl, rectangelCoor);
-    // Draw the scene
-    drawScene(gl, programInfo, buffers, x, y);
-  });
-
-  
-
-  // Initialize a shader program; this is where all the lighting
-  // for the vertices and so forth is established.
-  const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-
-  // Collect all the info needed to use the shader program.
-  // Look up which attribute our shader program is using
-  // for aVertexPosition and look up uniform locations.
-  const programInfo = {
-    program: shaderProgram,
-    attribLocations: {
-      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-    },
-    uniformLocations: {
-      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-    },
-  };
-
-  // Here's where we call the routine that builds all the
-  // objects we'll be drawing.
-  
-}
 
 // initBuffers
 // Initialize the buffers we'll need. For this demo, we just
@@ -137,7 +57,7 @@ function drawScene(gl, programInfo, buffers, x, y) {
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   const zNear = 0.1;
   const zFar = 100.0;
-  const projectionMatrix = mat4.create();
+  const projectionMatrix = vec4.create();
 
   // note: glmatrix.js always has the first argument
   // as the destination to receive the result.
@@ -202,32 +122,199 @@ function drawScene(gl, programInfo, buffers, x, y) {
   }
 }
 
-// Initialize a shader program, so WebGL knows how to draw our data
-function initShaderProgram(gl, vsSource, fsSource) {
-  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
-  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+function mouseUpListener(e){
+  var pos = getMouseCoordinate(canvas, e);
+  const x = pos.x / gl.canvas.width  *  2 - 1;
+  const y = pos.y / gl.canvas.height * -2 + 1;
 
-  const shaderProgram = gl.createProgram();
-  gl.attachShader(shaderProgram, vertexShader);
-  gl.attachShader(shaderProgram, fragmentShader);
-  gl.linkProgram(shaderProgram);
-
-  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
-    return null;
+  if(onDrawClick){
+    const savedshape = {"garis":{}, "persegi":{}, "persegipanjang":{}}
+    const n = parseInt(document.getElementById("poligonSide").value)
+    masterRenderPosition= [...tempPosition]
+    masterRenderColor= [...tempColor]
+    tempColor=[]
+    tempPosition=[]
+    objectCount++;
+    objType.push(selectedMenu)
+    if(objectCount==1) {startPointObject.push(0)}
+    else {
+      if(objType[objectCount-1]!="poligon"){
+        startPointObject.push(startPointObject[startPointObject.length-1]+4)
+      }else{
+        startPointObject.push(
+          startPointObject[startPointObject.length-1] + 
+          numberVertecObject[numberVertecObject.length-1])
+      }
+    }
+    if(Object.keys(savedshape).includes(selectedMenu)){
+      numberVertecObject.push(4)
+    }else if(selectedMenu == "poligon"){
+      numberVertecObject.push(n)
+    }
   }
 
-  return shaderProgram;
+  onDrawClick = false
 }
 
-function loadShader(gl, type, source) {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+function mouseDownListener(e){
+  var pos = getMouseCoordinate(canvas, e);
+  initX = pos.x / gl.canvas.width  *  2 - 1;
+  initY = pos.y / gl.canvas.height * -2 + 1;    
+  // console.log(x, y);
+
+  // tempPosition = [...masterRenderPosition]
+  // tempColor = [...masterRenderColor]
+
+  const shapeOpt = {
+    "garis":createLine, 
+    "persegi":createSquare, 
+    "persegipanjang":createRectangle,
+    "poligon" : createPolygon
   }
-  return shader;
+  if(Object.keys(shapeOpt).includes(selectedMenu)){
+    onDrawClick = true
+    shapeFunc = shapeOpt[selectedMenu]
+  }
 }
+
+function mouseMoveListener(e){
+  var pos = getMouseCoordinate(canvas, e);
+  const x = pos.x / gl.canvas.width  *  2 - 1;
+  const y = pos.y / gl.canvas.height * -2 + 1;
+  if(onDrawClick){
+    const isPoligon = selectedMenu == "poligon"
+    let nPoligon = parseInt(document.getElementById("poligonSide").value)
+    console.log(x,y)
+    const lineVertex = shapeFunc({x:initX,y:initY},{x:x,y:y})
+    tempPosition = [...masterRenderPosition].concat(lineVertex)
+    const gw = gantiWarna()
+    if(selectedMenu!="poligon"){
+      tempColor = [...masterRenderColor].concat([
+        gw.r,gw.g,gw.b,1,
+        gw.r,gw.g,gw.b,1,
+        gw.r,gw.g,gw.b,1,
+        gw.r,gw.g,gw.b,1,
+      ])
+    }else{
+      let tColor = []
+      const n = parseInt(document.getElementById("poligonSide").value)
+      for(let i=0;i<n;i++){
+        tColor = tColor.concat([gw.r,gw.g,gw.b,1])
+      }
+      tempColor = [...masterRenderColor].concat(tColor)
+    }
+    //clearCanvas(gl, shaderProgram);
+    const sip = objType[objectCount]=="poligon"
+    const prevNPolygon = numberVertecObject[numberVertecObject.length-1]
+    let bIdx = [...startPointObject, startPointObject.length>1 ? startPointObject[startPointObject.length-1]+(sip?prevNPolygon:4) : 0]
+    const nIdx = [...numberVertecObject, isPoligon ? nPoligon : 4]
+    renderCanvas({
+      gl: gl,
+      color: tempColor,
+      position: tempPosition,
+      nDrawableObj: objectCount+1,
+      beginIdx: bIdx,
+      numIdx: nIdx,
+      program: shaderProgram
+    })
+  }
+
+  if(e.target !== canvas){
+    onDrawClick = false
+  }
+}
+
+function mouseClickListener(e){
+    if(selectedMenu=="select"){
+      selectedObjectId = selectTools(e)
+      const textObjectId = document.getElementById("text-objid")
+      const textObjectType = document.getElementById("text-objtype")
+      if(selectedObjectId > 0){
+        textObjectId.textContent = "Object dengan ID: "+selectedObjectId
+        textObjectType.hidden = false
+        textObjectType.textContent = objType[selectedObjectId]
+      }else{
+        textObjectId.textContent = "No Object selected!"
+        textObjectType.hidden = true
+      }
+      objectEditorHandler()
+    }
+}
+
+function polygon(vectors){
+
+  return true
+}
+
+function mainApp() {
+  if (!gl) {
+    alert('Unable to initialize WebGL. Your browser or machine may not support it.');
+    return;
+  }
+  tempPosition = [...masterRenderPosition]
+  tempColor = [...masterRenderColor]
+  //Inisialisasi awal sharder
+  shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+  gl.clearColor(0,0,0,0)
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  gl.useProgram(shaderProgram)
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+
+  //Event listener reader for mouse
+  canvas.addEventListener('mousedown', mouseDownListener);
+
+  canvas.addEventListener('mouseup', mouseUpListener);
+
+  canvas.addEventListener('click', mouseClickListener);
+
+  document.addEventListener("mousemove", mouseMoveListener)
+
+  menubox.addEventListener("click", function(e){
+    radios = document.getElementsByName("shape")
+    var isPoligon = selectedMenu == "poligon"
+    for (const radio of radios){
+      if(radio.checked){
+        selectedMenu = radio.value
+      }
+    }
+
+    if(!isPoligon && selectedMenu == "poligon"){
+      document.getElementById("poligonSide").value = 5
+    }
+
+    if(selectedMenu == "select" && objectCount>0){
+      objEditForm.hidden = false
+    }else{
+      objEditForm.hidden = true
+      selectedObjectId = 0
+    }
+  })
+
+  canvas.addEventListener('dblclick', (e)=>{
+    
+  })
+
+  document.getElementById("resetcanvas").addEventListener('click', (e)=>{
+    clearCanvasCling()
+  })
+  
+  // Collect all the info needed to use the shader program.
+  // Look up which attribute our shader program is using
+  // for aVertexPosition and look up uniform locations.
+  const programInfo = {
+    program: shaderProgram,
+    attribLocations: {
+      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+    },
+    uniformLocations: {
+      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+    },
+  };
+
+  // Here's where we call the routine that builds all the
+  // objects we'll be drawing.
+  
+}
+
+mainApp();
