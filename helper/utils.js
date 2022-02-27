@@ -98,9 +98,10 @@ var readFile = function() {
         console.log('obj', arrayShape);
         masterRenderColor = arrayShape['masterRenderColorKey']
         masterRenderPosition = arrayShape['masterRenderPositionKey']
-        nDrawableObj = parseInt(arrayShape['objectCountKey'])
+        objectCount = parseInt(arrayShape['objectCountKey'])
         startPointObject = arrayShape['startPointObjectKey']
         numberVertecObject = arrayShape['numberVertecObjectKey']
+        objType = arrayShape['objTypeKey']
         renderCanvas({
             gl: gl,
             color: arrayShape['masterRenderColorKey'],
