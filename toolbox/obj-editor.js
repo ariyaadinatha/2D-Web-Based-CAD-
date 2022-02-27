@@ -27,6 +27,8 @@ function objectEditorHandler(){
     slider.addEventListener('change', (e)=>{
         if(type == "persegi"){
             resizeSquare(e.target.value)
+        }else if(type=="garis"){
+            resizeLine(e.target.value)
         }
     })
 }
@@ -98,7 +100,7 @@ function getRectWidth(){
 
 function resizeSquare(val){
     const vdata = getObjectVector()
-    const actVal = parseInt(val)/100
+    const actVal = parseInt(val)/200
     const middlePoint = [
         (vdata.vx[0] + vdata.vx[2])/2,
         (vdata.vy[0] + vdata.vy[2])/2
@@ -109,6 +111,37 @@ function resizeSquare(val){
         middlePoint[0] + actVal, middlePoint[1] - actVal,
         middlePoint[0] - actVal, middlePoint[1] - actVal,
     ]
+    let prec=0
+    for(let j=startPoint * 2; j<(startPoint*2)+(objSide*2); j++){
+        masterRenderPosition[j] = newVector[prec]
+        prec++
+    }
+
+    renderCanvas({
+        gl: gl,
+        color: masterRenderColor,
+        position: masterRenderPosition,
+        nDrawableObj: objectCount,
+        beginIdx: startPointObject,
+        numIdx: numberVertecObject,
+        program: shaderProgram
+    })
+}
+
+function resizeLine(val){
+    const vdata = getObjectVector()
+    const actVal = parseInt(val)/200
+    const middlePoint = [
+        (vdata.vx[0] + vdata.vx[1])/2,
+        (vdata.vy[0] + vdata.vy[1])/2
+    ]
+    let newVector
+    if(vdata.vy[0] < vdata.vy[1]){
+        newVector = createLine({x:middlePoint[0]-actVal,y: middlePoint[1]+actVal}, {x:middlePoint[0]+actVal,y: middlePoint[1]-actVal})
+    }else{
+        newVector = createLine({x:middlePoint[0]-actVal,y: middlePoint[1]-actVal}, {x:middlePoint[0]+actVal,y: middlePoint[1]+actVal})
+    }
+
     let prec=0
     for(let j=startPoint * 2; j<(startPoint*2)+(objSide*2); j++){
         masterRenderPosition[j] = newVector[prec]
