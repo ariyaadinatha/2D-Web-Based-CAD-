@@ -43,12 +43,16 @@
                             Warna <input type="color" name="warna" id="selektor-warna" onchange="gantiWarna()">
                             <br>
                             <button id="help" type="button" onclick="showHelp()"> help </button>
+                            <button id="save" type="button" onclick="saveShape()"> save </button>
                             <button id="resetcanvas" type="button">reset canvas</button>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="file" name="inputFile">
+                            <input type="file" value="inputFile" id="inputFile" name="inputFile">
+                        </td>
+                        <td>
+                            <button type="button" onclick="readFile()"> Submit File </button>
                         </td>
                     </tr>
                 </table>
@@ -77,8 +81,6 @@
         
         <canvas width="800" height="800" id="canvas"></canvas>
     </div>
-
-    
 
 </body>
 </html>

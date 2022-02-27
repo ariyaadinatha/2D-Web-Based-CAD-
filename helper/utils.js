@@ -68,3 +68,47 @@ function showHelp() {
     `;
     alert(helpModule);
 }
+
+function getFile(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.getFile = fileName;
+    a.click();
+}
+
+function saveShape() {
+    var shapeJSON = {
+        masterRenderColorKey : masterRenderColor,
+        masterRenderPositionKey : masterRenderPosition,
+        objectCountKey : objectCount,
+        startPointObjectKey : startPointObject,
+        numberVertecObjectKey : numberVertecObject,
+        objTypeKey : objType,
+        selectedObjectIdKey : selectedObjectId
+    }
+    getFile(JSON.stringify(shapeJSON), 'shape.txt', 'text/plain');
+}
+
+var readFile = function() {
+    var file = document.getElementById("inputFile").files[0]
+    var reader = new FileReader();
+    reader.onload = function(e){
+        arrayShape = JSON.parse(e.target.result);
+        console.log('obj', arrayShape);
+        renderCanvas({
+            gl: gl,
+            color: arrayShape['masterRenderColorKey'],
+            position: arrayShape['masterRenderPositionKey'],
+            nDrawableObj: arrayShape['objectCountKey'],
+            beginIdx: arrayShape['startPointObjectKey'],
+            numIdx: arrayShape['numberVertecObjectKey'],
+            program: shaderProgram
+        })
+    }
+    
+    reader.readAsText(file);
+    if (!file) {
+        alert('Cannot proceed empty file')
+    }
+}
