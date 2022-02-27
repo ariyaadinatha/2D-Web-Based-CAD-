@@ -57,3 +57,14 @@ function clearCanvas(gl, program){
 function round(num) {
     return Math.round((num + Number.EPSILON) * 100) / 100;
 }
+
+function showHelp() {
+    const helpModule = `
+    1. Pilih shape yang diinginkan
+    2. Drag mouse untuk menggambar
+    3. Pilih 'Select Mode'
+    4. Click shape yang ingin diubah
+    5. Geser untuk merubah ukuran / Pilih warna yang diinginkan
+    `;
+    alert(helpModule);
+}
