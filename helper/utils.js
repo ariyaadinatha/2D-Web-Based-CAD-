@@ -96,6 +96,11 @@ var readFile = function() {
     reader.onload = function(e){
         arrayShape = JSON.parse(e.target.result);
         console.log('obj', arrayShape);
+        masterRenderColor = arrayShape['masterRenderColorKey']
+        masterRenderPosition = arrayShape['masterRenderPositionKey']
+        nDrawableObj = parseInt(arrayShape['objectCountKey'])
+        startPointObject = arrayShape['startPointObjectKey']
+        numberVertecObject = arrayShape['numberVertecObjectKey']
         renderCanvas({
             gl: gl,
             color: arrayShape['masterRenderColorKey'],
