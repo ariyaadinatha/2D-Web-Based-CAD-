@@ -40,6 +40,7 @@
                             <br>
                             Warna <input type="color" name="warna" id="selektor-warna" onchange="gantiWarna()">
                             <br>
+                            <button id="help" type="button" onclick="showHelp()"> help </button>
                             <button id="resetcanvas" type="button">reset canvas</button>
                         </td>
                     </tr>
@@ -50,6 +51,7 @@
                     </tr>
                 </table>
             </form>
+
             <form class="canvasForm" id="objedit-form">
                 <table border="1">
                     <tr>
@@ -73,5 +75,8 @@
         
         <canvas width="800" height="800" id="canvas"></canvas>
     </div>
+
+    
+
 </body>
 </html>
