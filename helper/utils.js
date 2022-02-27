@@ -69,11 +69,11 @@ function showHelp() {
     alert(helpModule);
 }
 
-function getFile(content, fileName, contentType) {
+function download(content, fileName, contentType) {
     var a = document.createElement("a");
     var file = new Blob([content], {type: contentType});
     a.href = URL.createObjectURL(file);
-    a.getFile = fileName;
+    a.download = fileName;
     a.click();
 }
 
@@ -87,7 +87,7 @@ function saveShape() {
         objTypeKey : objType,
         selectedObjectIdKey : selectedObjectId
     }
-    getFile(JSON.stringify(shapeJSON), 'shape.txt', 'text/plain');
+    download(JSON.stringify(shapeJSON), 'shape.txt', 'text/plain');
 }
 
 var readFile = function() {
