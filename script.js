@@ -152,7 +152,8 @@ function mouseUpListener(e){
       numberVertecObject.push(n)
     }
   }
-
+  onVertecClick = false
+  selectedVertexIndex = -1
   onDrawClick = false
 }
 
@@ -175,6 +176,9 @@ function mouseDownListener(e){
   if(Object.keys(shapeOpt).includes(selectedMenu)){
     onDrawClick = true
     shapeFunc = shapeOpt[selectedMenu]
+  }else if(selectedMenu == "select"){
+    onVertecClick = selectedObjectId > 0 && document.getElementById("vertexmode").checked
+    selectedVertexIndex = onVertecClick ? selectedVertex(initX,initY) : -1
   }
 }
 
@@ -183,32 +187,7 @@ function mouseMoveListener(e){
   const x = pos.x / gl.canvas.width  *  2 - 1;
   const y = pos.y / gl.canvas.height * -2 + 1;
   if(onDrawClick){
-    if (selectedMenu=="vertex"){
-      let {idxShape, idxVertex} = shapeFunc({x:initX,y:initY},{x:x,y:y});
-      
-      console.log(idxShape, idxVertex)
-      if (idxShape!=null && idxVertex!=null){
-        console.log("nyampe sini anjay")
-        masterRenderPosition[startPointObject[idxShape]*2] = x;
-        masterRenderPosition[startPointObject[idxShape]*2+1] = y;
-
-        tempPosition = [...masterRenderPosition];
-        tempColor = [...masterRenderColor];
-        let bIdx = startPointObject[idxShape];
-        let numIdx = [...numberVertecObject];
-
-        renderCanvas({
-          gl: gl,
-          color: tempColor,
-          position: tempPosition,
-          nDrawableObj: objectCount+1,
-          beginIdx: bIdx,
-          numIdx: numIdx,
-          program: shaderProgram
-        })
-      }
-    }else{
-      const isPoligon = selectedMenu == "poligon"
+    const isPoligon = selectedMenu == "poligon"
       let nPoligon = parseInt(document.getElementById("poligonSide").value)
       // console.log(x,y)
       
@@ -244,11 +223,15 @@ function mouseMoveListener(e){
         numIdx: nIdx,
         program: shaderProgram
       })
+  } else if(onVertecClick){
+    if(selectedVertexIndex > -1){
+      moveVertex(selectedVertexIndex, x, y)
     }
   }
 
   if(e.target !== canvas){
     onDrawClick = false
+    onVertecClick = false
   }
 }
 
@@ -324,6 +307,13 @@ function mainApp() {
 
   document.getElementById("resetcanvas").addEventListener('click', (e)=>{
     clearCanvasCling()
+  })
+
+  const vmode = document.getElementById("vertexmode")
+  vmode.addEventListener('click', (e)=>{
+    if(!vmode.checked){
+      onVertecClick = false
+    }
   })
   
   // Collect all the info needed to use the shader program.

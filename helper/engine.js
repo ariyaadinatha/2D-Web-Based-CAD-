@@ -32,7 +32,7 @@ function renderCanvas(rObj = {
     beginIdx: [],
     numIdx: []
   }){
-    // console.log("si render: ", rObj)
+    console.log("si render: ", rObj)
     const gl = rObj.gl;
     gl.useProgram(rObj.program)
     gl.viewport(0,0, gl.canvas.width, gl.canvas.height)
