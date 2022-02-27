@@ -36,6 +36,53 @@ function selectTools(e){
     return 0
 }
 
+function moveVertex(start = {x:0,y:0},end = {x:0,y:0}){
+    for(let i=1; i<=objectCount; i++){
+        const pointsInObject = []
+        for(let j=startPointObject[i]*2; j<(startPointObject[i]*2)+(numberVertecObject[i]*2); j=j+2){
+            pointsInObject.push({x: masterRenderPosition[j], y: masterRenderPosition[j+1]})
+        }
+        
+        console.log(pointsInObject);
+        let idx=0;
+        for (const point of pointsInObject){
+            // console.log(start);
+            // console.log(point);
+            if (isNearBy(start, point)){
+                console.log("nyampe sini lur");
+                console.log(idx, i);
+                return {idxShape: i, idxVertex: idx};
+            }
+            idx++;
+        }
+        
+        // if(objType[i]==="poligon"){
+        //     const lp = luasPoligon(numberVertecObject[i], v)
+        //     const cply = checkPointPolygon(x,y,xv, yv)
+        //     console.log("luas poligon ", lp, cply)
+        //     if(isAreaEqual(lp, cply)){
+        //         return i
+        //     }
+        // }else{
+        //     const luas = luasPPanjang(
+        //         {x:xv[0],y:yv[0]}, {x:xv[1],y:yv[1]}, {x:xv[2],y:yv[2]}, {x:xv[3],y:yv[3]}
+        //     )
+        //     const ldot = checkPointNoPolygon(x,y,{x:xv[0],y:yv[0]}, {x:xv[1],y:yv[1]}, {x:xv[2],y:yv[2]}, {x:xv[3],y:yv[3]})
+        //     console.log("lwass ", luas, ldot)
+        //     if(isAreaEqual(luas, ldot)){
+        //         return i
+        //     }
+        // }
+    }
+    return {idxShape: null, idxVertex: null};
+}
+
+function isNearBy(p1={x:0,y:0}, p2={x:0,y:0}){
+    const distance = Math.sqrt(Math.pow(p1.x-p2.x,2) + Math.pow(p1.y-p2.y,2));
+    // console.log(distance);
+    return distance < 0.1 ? true : false;
+}
+
 function luasPPanjang(p1={x:0,y:0}, p2={x:0,y:0}, p3={x:0,y:0}, p4={x:0,y:0}){
     const a = luasSegitgaSembarang(p1,p2,p3)
     const b = luasSegitgaSembarang(p4,p3,p2)

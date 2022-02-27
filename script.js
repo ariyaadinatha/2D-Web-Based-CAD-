@@ -70,7 +70,7 @@ function drawScene(gl, programInfo, buffers, x, y) {
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
   const modelViewMatrix = mat4.create();
-  console.log(modelViewMatrix);
+  // console.log(modelViewMatrix);
 
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
@@ -169,7 +169,8 @@ function mouseDownListener(e){
     "garis":createLine, 
     "persegi":createSquare, 
     "persegipanjang":createRectangle,
-    "poligon" : createPolygon
+    "poligon" : createPolygon,
+    "vertex" : moveVertex
   }
   if(Object.keys(shapeOpt).includes(selectedMenu)){
     onDrawClick = true
@@ -182,41 +183,68 @@ function mouseMoveListener(e){
   const x = pos.x / gl.canvas.width  *  2 - 1;
   const y = pos.y / gl.canvas.height * -2 + 1;
   if(onDrawClick){
-    const isPoligon = selectedMenu == "poligon"
-    let nPoligon = parseInt(document.getElementById("poligonSide").value)
-    console.log(x,y)
-    const lineVertex = shapeFunc({x:initX,y:initY},{x:x,y:y})
-    tempPosition = [...masterRenderPosition].concat(lineVertex)
-    const gw = gantiWarna()
-    if(selectedMenu!="poligon"){
-      tempColor = [...masterRenderColor].concat([
-        gw.r,gw.g,gw.b,1,
-        gw.r,gw.g,gw.b,1,
-        gw.r,gw.g,gw.b,1,
-        gw.r,gw.g,gw.b,1,
-      ])
-    }else{
-      let tColor = []
-      const n = parseInt(document.getElementById("poligonSide").value)
-      for(let i=0;i<n;i++){
-        tColor = tColor.concat([gw.r,gw.g,gw.b,1])
+    if (selectedMenu=="vertex"){
+      let {idxShape, idxVertex} = shapeFunc({x:initX,y:initY},{x:x,y:y});
+      
+      console.log(idxShape, idxVertex)
+      if (idxShape!=null && idxVertex!=null){
+        console.log("nyampe sini anjay")
+        masterRenderPosition[startPointObject[idxShape]*2] = x;
+        masterRenderPosition[startPointObject[idxShape]*2+1] = y;
+
+        tempPosition = [...masterRenderPosition];
+        tempColor = [...masterRenderColor];
+        let bIdx = startPointObject[idxShape];
+        let numIdx = [...numberVertecObject];
+
+        renderCanvas({
+          gl: gl,
+          color: tempColor,
+          position: tempPosition,
+          nDrawableObj: objectCount+1,
+          beginIdx: bIdx,
+          numIdx: numIdx,
+          program: shaderProgram
+        })
       }
-      tempColor = [...masterRenderColor].concat(tColor)
+    }else{
+      const isPoligon = selectedMenu == "poligon"
+      let nPoligon = parseInt(document.getElementById("poligonSide").value)
+      // console.log(x,y)
+      
+      const lineVertex = shapeFunc({x:initX,y:initY},{x:x,y:y})
+      tempPosition = [...masterRenderPosition].concat(lineVertex)
+      const gw = gantiWarna()
+      if(selectedMenu!="poligon"){
+        tempColor = [...masterRenderColor].concat([
+          gw.r,gw.g,gw.b,1,
+          gw.r,gw.g,gw.b,1,
+          gw.r,gw.g,gw.b,1,
+          gw.r,gw.g,gw.b,1,
+        ])
+      }else{
+        let tColor = []
+        const n = parseInt(document.getElementById("poligonSide").value)
+        for(let i=0;i<n;i++){
+          tColor = tColor.concat([gw.r,gw.g,gw.b,1])
+        }
+        tempColor = [...masterRenderColor].concat(tColor)
+      }
+      //clearCanvas(gl, shaderProgram);
+      const sip = objType[objectCount]=="poligon"
+      const prevNPolygon = numberVertecObject[numberVertecObject.length-1]
+      let bIdx = [...startPointObject, startPointObject.length>1 ? startPointObject[startPointObject.length-1]+(sip?prevNPolygon:4) : 0]
+      const nIdx = [...numberVertecObject, isPoligon ? nPoligon : 4]
+      renderCanvas({
+        gl: gl,
+        color: tempColor,
+        position: tempPosition,
+        nDrawableObj: objectCount+1,
+        beginIdx: bIdx,
+        numIdx: nIdx,
+        program: shaderProgram
+      })
     }
-    //clearCanvas(gl, shaderProgram);
-    const sip = objType[objectCount]=="poligon"
-    const prevNPolygon = numberVertecObject[numberVertecObject.length-1]
-    let bIdx = [...startPointObject, startPointObject.length>1 ? startPointObject[startPointObject.length-1]+(sip?prevNPolygon:4) : 0]
-    const nIdx = [...numberVertecObject, isPoligon ? nPoligon : 4]
-    renderCanvas({
-      gl: gl,
-      color: tempColor,
-      position: tempPosition,
-      nDrawableObj: objectCount+1,
-      beginIdx: bIdx,
-      numIdx: nIdx,
-      program: shaderProgram
-    })
   }
 
   if(e.target !== canvas){

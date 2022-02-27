@@ -31,7 +31,7 @@ rgb = hexToRgb(colorPicker());
 selectedColor.r = rgb.r;
 selectedColor.g = rgb.g;
 selectedColor.b = rgb.b;
-console.log("rgb",rgb)
+// console.log("rgb",rgb)
 return {
     r:glConvention(rgb.r),
     g:glConvention(rgb.g),
