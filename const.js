@@ -19,4 +19,6 @@ let numberVertecObject = [0]
 let objType = [""]
 let selectedObjectId = 0
 const objEditForm = document.getElementById("objedit-form")
+let onVertecClick = false
+let selectedVertexIndex = 0
 //objEditForm.hidden = true
