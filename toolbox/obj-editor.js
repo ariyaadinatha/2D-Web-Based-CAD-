@@ -15,11 +15,12 @@ function objectEditorHandler(){
 
     //Setup for slider first
     const slider = document.getElementById("editsize")
+    let lg
     if(type == "persegi"){
-        const lg = getRectLength()
+        lg = getRectLength()
         slider.value = lg*100
     }else if(type=="garis"){
-        const lg = getRectWidth()
+        lg = getRectWidth()
         slider.value = lg*100
     }
 
@@ -28,7 +29,7 @@ function objectEditorHandler(){
         if(type == "persegi"){
             resizeSquare(e.target.value)
         }else if(type=="garis"){
-            resizeLine(e.target.value)
+            resizeLine(e.target.value, lg*100)
         }
     })
 }
@@ -128,20 +129,26 @@ function resizeSquare(val){
     })
 }
 
-function resizeLine(val){
+function resizeLine(val,val0){
     const vdata = getObjectVector()
     const actVal = parseInt(val)/200
     const middlePoint = [
         (vdata.vx[0] + vdata.vx[1])/2,
         (vdata.vy[0] + vdata.vy[1])/2
     ]
+    const teta = Math.atan2(vdata.vy[0]-middlePoint[1], vdata.vx[0] - middlePoint[0])
+    console.log(teta)
     let newVector
-    if(vdata.vy[0] < vdata.vy[1]){
-        newVector = createLine({x:middlePoint[0]-actVal,y: middlePoint[1]+actVal}, {x:middlePoint[0]+actVal,y: middlePoint[1]-actVal})
-    }else{
-        newVector = createLine({x:middlePoint[0]-actVal,y: middlePoint[1]-actVal}, {x:middlePoint[0]+actVal,y: middlePoint[1]+actVal})
+    const newStartPoint = {
+        x: middlePoint[0] + (Math.sin(teta)*actVal),
+        y: middlePoint[1] - (Math.cos(teta)*actVal)
     }
-
+    const newEndPoint = {
+        x: middlePoint[0] - (Math.sin(teta )*actVal),
+        y: middlePoint[1] + (Math.cos(teta )*actVal)
+    }
+    newVector = createLine(newStartPoint, newEndPoint)
+    console.log("newvector", newVector)
     let prec=0
     for(let j=startPoint * 2; j<(startPoint*2)+(objSide*2); j++){
         masterRenderPosition[j] = newVector[prec]

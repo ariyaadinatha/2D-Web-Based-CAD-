@@ -23,9 +23,10 @@ function selectTools(e){
                 return i
             }
         }else{
-            const luas = luasPPanjang(
-                {x:xv[0],y:yv[0]}, {x:xv[1],y:yv[1]}, {x:xv[2],y:yv[2]}, {x:xv[3],y:yv[3]}
-            )
+            // const luas = luasPPanjang(
+            //     {x:xv[0],y:yv[0]}, {x:xv[1],y:yv[1]}, {x:xv[2],y:yv[2]}, {x:xv[3],y:yv[3]}
+            // )
+            const luas = luasPoligon(4, v)
             const ldot = checkPointNoPolygon(x,y,{x:xv[0],y:yv[0]}, {x:xv[1],y:yv[1]}, {x:xv[2],y:yv[2]}, {x:xv[3],y:yv[3]})
             console.log("lwass ", luas, ldot)
             if(isAreaEqual(luas, ldot)){
@@ -34,6 +35,38 @@ function selectTools(e){
         }
     }
     return 0
+}
+
+function moveVertex(vidx,x,y){
+    masterRenderPosition[vidx] = x
+    masterRenderPosition[vidx+1] = y
+    renderCanvas({
+        gl: gl,
+        color: masterRenderColor,
+        position: masterRenderPosition,
+        nDrawableObj: objectCount,
+        beginIdx: startPointObject,
+        numIdx: numberVertecObject,
+        program: shaderProgram
+    })
+}
+
+function selectedVertex(x,y){
+    let i = selectedObjectId
+    for(let j=startPointObject[i]*2;j<(startPointObject[i]*2)+(numberVertecObject[i]*2); j=j+2){
+        const px = masterRenderPosition[j]
+        const py = masterRenderPosition[j+1]
+        if(isNearBy({x:x,y:y},{x:px,y:py})){
+            return j
+        }
+    }
+    return -1
+}
+
+function isNearBy(p1={x:0,y:0}, p2={x:0,y:0}){
+    const distance = Math.sqrt(Math.pow(p1.x-p2.x,2) + Math.pow(p1.y-p2.y,2));
+    // console.log(distance);
+    return distance < 0.03 ? true : false;
 }
 
 function luasPPanjang(p1={x:0,y:0}, p2={x:0,y:0}, p3={x:0,y:0}, p4={x:0,y:0}){
