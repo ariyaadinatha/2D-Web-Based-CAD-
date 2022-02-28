@@ -67,6 +67,8 @@ function showHelp() {
     5. Geser untuk merubah ukuran / Pilih warna yang diinginkan
     6. Pilih save untuk menyimpan file
     7. Pilih choose file dan masukkan file yang ingin diload, kemudian submit
+    
+    Note : Jika refresh tidak berhasil, silahkan refresh browser
     `;
     alert(helpModule);
 }
