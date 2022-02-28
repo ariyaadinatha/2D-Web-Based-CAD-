@@ -10,3 +10,4 @@
 7. Pilih choose file dan masukkan file yang ingin diload, kemudian submit
 
 Link Dokumen : https://docs.google.com/document/d/1qt6A3ET8Kw6DfJpSkwCZ0WK5Pj90LkoXbe6AfH1DXqw/edit?usp=sharing
+Link Web : https://objective-archimedes-1ac243.netlify.app/ 
