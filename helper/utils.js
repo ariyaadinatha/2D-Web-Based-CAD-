@@ -65,6 +65,8 @@ function showHelp() {
     3. Pilih 'Select Mode'
     4. Click shape yang ingin diubah
     5. Geser untuk merubah ukuran / Pilih warna yang diinginkan
+    6. Pilih save untuk menyimpan file
+    7. Pilih choose file dan masukkan file yang ingin diload, kemudian submit
     `;
     alert(helpModule);
 }
